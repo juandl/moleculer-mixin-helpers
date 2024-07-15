@@ -125,18 +125,19 @@ class JoiValidator extends BaseValidator {
     // Check if is merged schema
    let data = {};
 
-   if(!_.has(params, "body"))
+   if(!(_.has(params, "body") || _.has(params, "query") || _.has(params, "params")))
      return params;
 
-     // _.every is used because it will exit the loop when a false is returned
-   _.forEach(params, (value, key) => {
+    const keysOrder = ["body", "query", "params"];
 
-     if(!_.isEmpty(value)){
-       data = value;
-       return false;
-     }
-     return true;
-   });
+   _.forEach(keysOrder, (value) => {
+      data = _.get(params, value, {});
+
+      if(!_.isEmpty(data)){
+        return false;
+      }
+      return true;
+    });
 
    return data;
  }
